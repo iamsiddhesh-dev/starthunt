@@ -22,6 +22,8 @@ interface InkEnvironmentProps {
   /** Deepest parallax plane. */
   plane: Plane;
   mistPlane: Plane;
+  /** Lighten expensive filters/layers on small screens. */
+  light?: boolean;
 }
 
 // Page-wide woodcut environment: the water surface the tiger stands in, plus
@@ -35,6 +37,7 @@ export default function InkEnvironment({
   rippleCount,
   plane,
   mistPlane,
+  light = false,
 }: InkEnvironmentProps) {
   const rings = useMemo(
     () => generateRippleField(reduced ? Math.min(12, rippleCount) : rippleCount),
@@ -61,7 +64,7 @@ export default function InkEnvironment({
           tile rather than thousands of line nodes. */}
       <motion.svg
         className="absolute inset-[-6%] h-[112%] w-[112%]"
-        style={{ x: plane.x, y: plane.y, willChange: "transform" }}
+        style={{ x: plane.x, y: plane.y, ...(light ? {} : { willChange: "transform" }) }}
       >
         <defs>
           <pattern
@@ -80,17 +83,19 @@ export default function InkEnvironment({
               strokeWidth={0.6}
             />
           </pattern>
-          <filter id="hunt-grain">
-            <feTurbulence
-              type="fractalNoise"
-              baseFrequency="0.9"
-              numOctaves={2}
-              stitchTiles="stitch"
-            />
-          </filter>
+          {!light && (
+            <filter id="hunt-grain">
+              <feTurbulence
+                type="fractalNoise"
+                baseFrequency="0.9"
+                numOctaves={2}
+                stitchTiles="stitch"
+              />
+            </filter>
+          )}
         </defs>
-        <rect width="100%" height="100%" fill="url(#hunt-hatch)" opacity={0.028} />
-        <rect width="100%" height="100%" filter="url(#hunt-grain)" opacity={0.05} />
+        <rect width="100%" height="100%" fill="url(#hunt-hatch)" opacity={light ? 0.02 : 0.028} />
+        {!light && <rect width="100%" height="100%" filter="url(#hunt-grain)" opacity={0.05} />}
       </motion.svg>
 
       {origin && (

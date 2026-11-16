@@ -101,7 +101,7 @@ export interface HeroConfig {
   headlineScale: "sm" | "md" | "lg";
 }
 
-const TIGER_SRC = "/tiger-hero.png";
+const TIGER_SRC = "/tiger.webp";
 const TIGER_BLEND = "normal" as const;
 
 // Three hand-tuned compositions. Values are authored per breakpoint rather

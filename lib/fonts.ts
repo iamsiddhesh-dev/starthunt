@@ -12,6 +12,7 @@ export const cabinetGrotesk = localFont({
   ],
   variable: "--font-cabinet-grotesk",
   display: "swap",
+  preload: false,
 });
 
 export const ranade = localFont({
@@ -31,4 +32,6 @@ export const bespokeSlab = localFont({
   ],
   variable: "--font-bespoke-slab",
   display: "swap",
+  preload: false,
+  adjustFontFallback: "Arial",
 });

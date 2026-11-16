@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useLayoutEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import TigerFigure, { IMPACT_SCALE, LEAP, type TigerAnchors } from "./TigerFigure";
 import DevourHeadline from "./DevourHeadline";
@@ -31,8 +31,23 @@ export default function HeroStage({
   const [anchors, setAnchors] = useState<TigerAnchors | null>(null);
   const [headlineCenter, setHeadlineCenter] = useState<{ x: number; y: number } | null>(null);
   const headlineRef = useRef<HTMLDivElement>(null);
+  const [decorReady, setDecorReady] = useState(false);
 
   const isMobile = config.breakpoint === "mobile";
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const mount = () => setDecorReady(true);
+    const id = window.setTimeout(mount, reduced ? 1200 : 250);
+    const ric = (window as Window & { requestIdleCallback?: (cb: () => void) => number }).requestIdleCallback;
+    let ricId: number | undefined;
+    if (ric) ricId = ric(mount);
+    return () => {
+      window.clearTimeout(id);
+      const cic = (window as Window & { cancelIdleCallback?: (id: number) => void }).cancelIdleCallback;
+      if (ricId != null && cic) cic(ricId);
+    };
+  }, [reduced]);
 
   useLayoutEffect(() => {
     function measure() {
@@ -92,20 +107,32 @@ export default function HeroStage({
       }
     >
       {/* ---- Plane 1: background. Deepest, least travel. ---- */}
-      <InkEnvironment
-        origin={anchors?.paw ?? null}
-        impactPoint={impactPoint}
-        igniting={igniting}
-        reduced={reduced}
-        rippleCount={config.rippleCount}
-        plane={planes.envBg}
-        mistPlane={planes.mist}
-      />
+      {decorReady && (
+        <InkEnvironment
+          origin={anchors?.paw ?? null}
+          impactPoint={impactPoint}
+          igniting={igniting}
+          reduced={reduced}
+          rippleCount={isMobile ? Math.max(6, Math.floor(config.rippleCount * 0.5)) : config.rippleCount}
+          plane={planes.envBg}
+          mistPlane={planes.mist}
+          light={isMobile}
+        />
+      )}
 
       {/* ---- Plane 2: grass behind the tiger. ---- */}
-      {ready &&
+      {decorReady &&
+        ready &&
         backGrass.map((layer, i) => (
-          <HeroGrass key={`gb-${i}`} layer={layer} plane={planes.grassBack} seed={i + 1} />
+          <HeroGrass
+            key={`gb-${i}`}
+            layer={{
+              ...layer,
+              count: isMobile ? Math.max(10, Math.floor(layer.count * 0.6)) : layer.count,
+            }}
+            plane={planes.grassBack}
+            seed={i + 1}
+          />
         ))}
 
       {/* ---- Plane 3: the tiger. ---- */}
@@ -131,17 +158,31 @@ export default function HeroStage({
       />
 
       {/* ---- Plane 4: foreground grass, above the tiger. ---- */}
-      {ready &&
+      {decorReady &&
+        ready &&
         frontGrass.map((layer, i) => (
           <div key={`gf-${i}`} className="pointer-events-none absolute inset-0 z-20">
-            <HeroGrass layer={layer} plane={planes.grassFront} seed={i + 40} />
+            <HeroGrass
+              layer={{
+                ...layer,
+                count: isMobile ? Math.max(8, Math.floor(layer.count * 0.6)) : layer.count,
+              }}
+              plane={planes.grassFront}
+              seed={i + 40}
+            />
           </div>
         ))}
 
       {/* ---- Plane 5: drifting petals, frontmost. ---- */}
-      {ready && (
+      {decorReady && ready && (
         <div className="pointer-events-none absolute inset-0 z-20">
-          <PetalField config={config.petals} plane={planes.petals} />
+          <PetalField
+            config={{
+              ...config.petals,
+              count: isMobile ? Math.max(6, Math.floor(config.petals.count * 0.5)) : config.petals.count,
+            }}
+            plane={planes.petals}
+          />
         </div>
       )}
 

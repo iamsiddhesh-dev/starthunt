@@ -227,8 +227,7 @@ export default function TigerFigure({
                 src={t.src}
                 alt=""
                 fill
-                priority
-                sizes="120vh"
+                sizes="(max-width: 768px) 100vw, 62vw"
                 className="object-contain blur-[3px]"
                 style={{ mixBlendMode: t.blend }}
               />
@@ -239,7 +238,8 @@ export default function TigerFigure({
               alt="A woodcut-style tiger, crouched and snarling"
               fill
               priority
-              sizes="120vh"
+              fetchPriority="high"
+              sizes="(max-width: 768px) 100vw, 62vw"
               className="object-contain"
               style={{ mixBlendMode: t.blend }}
             />
