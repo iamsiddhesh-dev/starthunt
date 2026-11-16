@@ -1,8 +1,19 @@
 import type { Metadata } from "next";
+import { Geist, Geist_Mono } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import { cabinetGrotesk, ranade, bespokeSlab } from "@/lib/fonts";
 import GoogleAuthRetry from "@/components/hunt/GoogleAuthRetry";
 import "./globals.css";
+
+const geistSans = Geist({
+  variable: "--font-geist-sans",
+  subsets: ["latin"],
+});
+
+const geistMono = Geist_Mono({
+  variable: "--font-geist-mono",
+  subsets: ["latin"],
+});
 
 export const metadata: Metadata = {
   title: "startHunt",
@@ -17,7 +28,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${cabinetGrotesk.variable} ${ranade.variable} ${bespokeSlab.variable} h-full antialiased`}
+      className={`${geistSans.variable} ${geistMono.variable} ${cabinetGrotesk.variable} ${ranade.variable} ${bespokeSlab.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
         {/* Must be mounted regardless of which screen is showing — see the

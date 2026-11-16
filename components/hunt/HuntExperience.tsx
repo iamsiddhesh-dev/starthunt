@@ -1,15 +1,10 @@
 "use client";
 
-import dynamic from "next/dynamic";
 import { useCallback, useRef, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import HeroStage from "./HeroStage";
+import HuntChatFrame from "./HuntChatFrame";
 import InkWipe, { type InkWipePhase } from "./InkWipe";
-
-const HuntChatFrame = dynamic(() => import("./HuntChatFrame"), {
-  ssr: false,
-  loading: () => <div className="h-dvh w-full bg-ink" aria-hidden />,
-});
 
 // Total time from click to the DOM swap happening fully hidden under ink —
 // must match the sum of InkWipe's "active" delay+duration in InkWipe.tsx.
